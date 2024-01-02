@@ -109,7 +109,7 @@ static void free_handle(struct scap_engine_handle engine)
 
 # define UINT32_MAX (4294967295U)
 
-/* Recommended log buffer size. 
+/* Recommended log buffer size.
  * Taken from libbpf source code: https://github.com/libbpf/libbpf/blob/67a4b1464349345e483df26ed93f8d388a60cee1/src/bpf.h#L201
  */
 static const int BPF_LOG_SIZE = UINT32_MAX >> 8; /* verifier maximum in kernels <= 5.1 */
@@ -142,7 +142,7 @@ static int32_t lookup_filler_id(const char *filler_name)
 {
 	int j;
 
-	/* In our table we must have a filler_name corresponding to the final 
+	/* In our table we must have a filler_name corresponding to the final
 	 * part of the elf section.
 	 */
 	for(j = 0; j < sizeof(g_filler_names) / sizeof(g_filler_names[0]); ++j)
@@ -247,7 +247,7 @@ static int bpf_load_program(const struct bpf_insn *insns,
 		return fd;
 	}
 
-	/* Try a second time catching verifier logs. This step is performed 
+	/* Try a second time catching verifier logs. This step is performed
 	 * only if we have a buffer for collecting them (so only if we
 	 * pass to `bpf_load_program()` function a `log_buf`!= NULL).
 	 */
@@ -406,6 +406,8 @@ static int32_t load_maps(struct bpf_engine *handle, struct bpf_map_data *maps, i
 
 		if(maps[j].def.type == BPF_MAP_TYPE_PROG_ARRAY)
 		{
+			fprintf(stderr, "Found BPF_MAP_TYPE_PROG_ARRAY, j: %d,
+				inner_map_idx: %d\n", j, maps[j].def.inner_map_idx);
 			handle->m_bpf_prog_array_map_idx = j;
 		}
 	}
@@ -572,7 +574,7 @@ static int32_t load_tracepoint(struct bpf_engine* handle, const char *event, str
 			return SCAP_FAILURE;
 		}
 
-		/* Fill the tail table. The key is our filler internal code extracted 
+		/* Fill the tail table. The key is our filler internal code extracted
 		 * from `g_filler_names` in `lookup_filler_id` function. The value
 		 * is the program fd.
 		 */
@@ -977,7 +979,7 @@ static int32_t populate_fillers_table_map(struct bpf_engine *handle)
 		}
 	}
 
-	/* Even if the filler ppm code is defined it could happen that there 
+	/* Even if the filler ppm code is defined it could happen that there
 	 * is no filler implementation, some fillers are architecture-specifc.
 	 * For example `sched_prog_exec` filler exists only on `ARM64` while
 	 * `sys_pagefault_e` exists only on `x86`.
@@ -1664,7 +1666,7 @@ static int32_t scap_bpf_handle_event_mask(struct scap_engine_handle engine, uint
 			ret = update_interesting_syscalls_map(engine, SCAP_EVENTMASK_UNSET, ppm_sc);
 		}
 		break;
-	
+
 	case SCAP_EVENTMASK_SET:
 	case SCAP_EVENTMASK_UNSET:
 		ret = update_interesting_syscalls_map(engine, op, ppm_sc);
